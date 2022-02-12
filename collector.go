@@ -136,5 +136,12 @@ func (c collector) Collect(ch chan<- prometheus.Metric) {
 			float64(qq.RegularMarketVolume),
 			lvs...,
 		)
+
+		ch <- prometheus.MustNewConstMetric(
+			prometheus.NewDesc("quotes_exporter_previous_close_price", "Asset previous close price.", ls, nil),
+			prometheus.GaugeValue,
+			float64(qq.RegularMarketPreviousClose),
+			lvs...,
+		)
 	}
 }
