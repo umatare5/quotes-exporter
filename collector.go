@@ -22,6 +22,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 
 	"github.com/marcopaganini/quotes-exporter/stonks"
+	"github.com/marcopaganini/quotes-exporter/twelvedata"
 )
 
 var (
@@ -49,7 +50,9 @@ var (
 	cache *memoize.Memoizer = memoize.NewMemoizer(10*time.Minute, 20*time.Minute)
 
 	// flags
-	flagPort int
+	flagPort             int
+	flagEnableTwelvedata bool
+	flagTwelvedataApiKey string
 )
 
 // collector holds data for a prometheus collector.
@@ -87,6 +90,15 @@ func (c collector) Collect(ch chan<- prometheus.Metric) {
 	for _, symbol := range c.symbols {
 		// Try not to hit the end point too hard.
 		cachedFetcher := func() (interface{}, error) {
+
+			if flagEnableTwelvedata {
+				// Check if the environment variable exists
+				if flagTwelvedataApiKey == "" {
+					fmt.Println("Environment variable 'TWELVEDATA_API_KEY' is not set.")
+					return nil, nil
+				}
+				return twelvedata.Quote(symbol, flagTwelvedataApiKey)
+			}
 			return stonks.Quote(symbol)
 		}
 

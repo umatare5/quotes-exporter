@@ -16,6 +16,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/collectors"
@@ -68,6 +69,8 @@ func help(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	flag.IntVar(&flagPort, "port", 9340, "Port to listen for HTTP requests.")
+	flag.BoolVar(&flagEnableTwelvedata, "enable-twelvedata", false, "Use twelvedata API if enabled.")
+	flag.StringVar(&flagTwelvedataApiKey, "twelvedata.apikey", os.Getenv("TWELVEDATA_API_KEY"), "API key to use twelvedata API.")
 	flag.Parse()
 
 	reg := prometheus.NewRegistry()
